@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff3cd;
+      color: #665000;
+      padding: 20px;
+    }
+    h1 { text-align: center; font-weight: bold; margin-bottom: 20px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      background-color: #fff8e1;
+      border: 1px solid #d9b600;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #d9b600;
+    }
+    th {
+      background-color: #f0ad4e;
+      color: white;
+    }
+    td img {
+      max-width: 60px;
+      border-radius: 5px;
+    }
+    .btn {
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .remove-btn { background-color: #d9534f; color: white; }
+    .remove-btn:hover { background-color: #c9302c; }
+    #back-btn {
+      background-color: #0275d8;
+      color: white;
+      margin-top: 10px;
+      padding: 10px 20px;
+    }
+    #back-btn:hover { background-color: #025aa5; }
+    .total-container {
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: right;
+      margin-top: 10px;
+    }
+    .empty-cart {
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 50px;
+      color: #8a6d3b;
+    }
+  </style>
+</head>
+<body>
+  <h1>Shopping Cart</h1>
+  <div id="cart-container"></div>
+  <button id="back-btn" class="btn"><i class="fa-solid fa-arrow-left"></i> Back to All Ladoos</button>
+
+  <script>
+    const CART_KEY = 'cart';
+    const STORAGE_KEY = 'ladoosData';
+    const cartContainer = document.getElementById('cart-container');
+
+    // Load cart data
+    let cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+
+    function renderCart() {
+      if (cart.length === 0) {
+        cartContainer.innerHTML = `<p class="empty-cart">Your cart is empty.</p>`;
+        return;
+      }
+
+      const ladoosData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Quantity</th>
+              <th>Weight</th>
+              <th>Price (₹)</th>
+              <th>Total (₹)</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      let grandTotal = 0;
+
+      cart.forEach((item, index) => {
+        const ladoo = ladoosData.find(l => l.name === item.name);
+        const image = ladoo ? ladoo.img : '';
+        const total = item.totalPrice;
+        grandTotal += total;
+
+        html += `
+          <tr>
+            <td><img src="${image}" alt="${item.name}"></td>
+            <td>${item.name}</td>
+            <td>${item.quantity}</td>
+            <td>${item.weight}</td>
+            <td>${(total / item.quantity).toFixed(2)}</td>
+            <td>${total}</td>
+            <td><button class="btn remove-btn" onclick="removeItem(${index})"><i class="fa-solid fa-trash"></i> Remove</button></td>
+          </tr>
+        `;
+      });
+
+      html += `
+          </tbody>
+        </table>
+        <div class="total-container">Grand Total: ₹${grandTotal}</div>
+      `;
+
+      cartContainer.innerHTML = html;
+    }
+
+    function removeItem(index) {
+      if (confirm("Are you sure you want to remove this item?")) {
+        cart.splice(index, 1);
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        renderCart();
+      }
+    }
+
+    document.getElementById('back-btn').addEventListener('click', () => {
+      window.location.href = 'all-ladoos.html';
+    });
+
+    renderCart();
+  </script>
+</body>
+</html>

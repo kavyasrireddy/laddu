@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ladoo Details</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff3cd;
+      color: #665000;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #fff8e1;
+      border: 1px solid #d9b600;
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .container img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    h1 { margin-bottom: 10px; }
+    p { font-size: 1rem; color: #4d3e00; }
+    .price { font-size: 1.2rem; font-weight: bold; margin: 10px 0; }
+    .selection-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin: 15px 0;
+    }
+    .selection-container input,
+    .selection-container select {
+      padding: 5px 12px;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: 1px solid #d9b600;
+      text-align: center;
+    }
+    .btn {
+      margin-top: 15px;
+      background-color: #f0ad4e;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn:hover { background-color: #ec971f; }
+    #back-btn {
+      background-color: #0275d8;
+    }
+    #back-btn:hover {
+      background-color: #025aa5;
+    }
+    .not-found {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #c9302c;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="ladoo-container"></div>
+
+  <script>
+    const STORAGE_KEY = 'ladoosData';
+    const CART_KEY = 'cart';
+    const container = document.getElementById('ladoo-container');
+
+    // Get "name" parameter from URL
+    const params = new URLSearchParams(window.location.search);
+    const ladooName = params.get('name');
+
+    // Load ladoos from localStorage
+    const ladoosData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+    // Find ladoo by name
+    const ladoo = ladoosData.find(l => l.name === ladooName);
+
+    if (!ladoo) {
+      container.innerHTML = `<p class="not-found">Ladoo not found!</p>
+                             <button id="back-btn" class="btn"><i class="fa-solid fa-arrow-left"></i> Back</button>`;
+    } else {
+      // Use minPrice and maxPrice from stored ladoo
+      const minPrice = ladoo.minPrice || 50;
+      const maxPrice = ladoo.maxPrice || minPrice;
+
+      container.innerHTML = `
+        <img src="${ladoo.img}" alt="${ladoo.name}">
+        <h1>${ladoo.name}</h1>
+        <p>${ladoo.description}</p>
+
+        <div class="selection-container">
+          <label>Quantity:</label>
+          <input type="number" id="quantity" value="1" min="1">
+
+          <label>Weight per Ladoo:</label>
+          <select id="weight">
+            <option value="250">250 gms</option>
+            <option value="500">500 gms</option>
+            <option value="1000">1 kg</option>
+          </select>
+        </div>
+
+        <p class="price">Price: ₹<span id="price">${minPrice}</span></p>
+
+        <button id="wishlist-btn" class="btn"><i class="fa-solid fa-heart"></i> Add to Wishlist</button>
+        <button id="add-to-cart-btn" class="btn"><i class="fa-solid fa-cart-plus"></i> Add to Cart</button>
+        <br>
+        <button id="back-btn" class="btn"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      `;
+
+      const qtyInput = document.getElementById('quantity');
+      const weightSelect = document.getElementById('weight');
+      const priceElem = document.getElementById('price');
+      const addToCartBtn = document.getElementById('add-to-cart-btn');
+
+      // Update price dynamically based on quantity and weight
+      function updatePrice() {
+        const qty = parseInt(qtyInput.value);
+        const weight = parseInt(weightSelect.value);
+        const factor = weight / 250; // price scales by weight
+        let totalPrice = Math.round(minPrice * factor * qty);
+
+        // Ensure price does not exceed maxPrice range for 1 ladoo
+        if (qty === 1 && weight === 250) totalPrice = minPrice;
+
+        priceElem.textContent = totalPrice;
+        return totalPrice;
+      }
+
+      qtyInput.addEventListener('input', updatePrice);
+      weightSelect.addEventListener('change', updatePrice);
+
+      // Add to Cart button functionality
+      addToCartBtn.addEventListener('click', () => {
+        const qty = parseInt(qtyInput.value);
+        const weight = parseInt(weightSelect.value);
+        const totalPrice = updatePrice();
+
+        const cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+        cart.push({
+          name: ladoo.name,
+          quantity: qty,
+          weight: `${weight} gms`,
+          totalPrice: totalPrice
+        });
+
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        alert(`${ladoo.name} added to cart! Total Price: ₹${totalPrice}`);
+        window.location.href = 'cart.html';
+      });
+    }
+
+    // Back button
+    document.addEventListener('click', function(e) {
+      if (e.target && e.target.id === 'back-btn') {
+        window.location.href = 'all-ladoos.html';
+      }
+    });
+
+    // Wishlist button
+    document.addEventListener('click', function(e) {
+      if (e.target && e.target.id === 'wishlist-btn') {
+        alert(`${ladoo.name} added to wishlist!`);
+      }
+    });
+
+    // Initialize price
+    updatePrice();
+  </script>
+</body>
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Amma's Laddu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset and base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #FFF5D1;
+      color: #6B4A00;
+      margin: 0;
+      padding: 0;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Header */
+    header {
+      background-color: #A67C00;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 25px;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .logo img {
+      height: 48px;
+      width: auto;
+      border-radius: 8px;
+    }
+    .logo-text {
+      font-weight: 700;
+      font-size: 1.5rem;
+      user-select: none;
+      text-transform: uppercase;
+      letter-spacing: 1.3px;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      padding: 0;
+      margin: 0;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+    nav ul li a {
+      color: white;
+      padding-bottom: 3px;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.3s;
+    }
+    nav ul li a:hover {
+      border-bottom: 2px solid #FFF0B3;
+    }
+    .icons button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-left: 15px;
+      font-weight: 600;
+      padding: 5px 10px;
+      text-transform: uppercase;
+    }
+    .icons button:hover {
+      color: #FFF0B3;
+    }
+
+    /* Hero */
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 70px 30px 60px;
+      flex-wrap: wrap;
+      gap: 30px;
+      background-color: #FFE7A1;
+      border-radius: 0 0 25px 25px;
+      box-shadow: inset 0 0 25px #FFD454;
+    }
+    .hero-text {
+      max-width: 600px;
+    }
+    .hero-text h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      line-height: 1.1;
+      color: #6B4A00;
+    }
+    .hero-text p {
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      color: #8B6A00;
+    }
+    .cta {
+      background-color: #A67C00;
+      color: white;
+      border: none;
+      padding: 15px 50px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-transform: uppercase;
+    }
+    .cta:hover {
+      background-color: #7B5D00;
+    }
+    .hero-images img {
+      max-width: 320px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Social sidebar */
+    .social-sidebar {
+      position: fixed;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 100;
+    }
+    .social-sidebar a {
+      background: white;
+      color: #555;
+      width: 40px;
+      height: 40px;
+      border-radius: 0 8px 8px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.4rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      transition: background-color 0.3s, color 0.3s;
+      text-decoration: none;
+    }
+    .social-sidebar a:hover {
+      background-color: #A67C00;
+      color: white;
+    }
+
+    /* Chat widget */
+    .chat-widget {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background-color: #128C4A;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      z-index: 1000;
+    }
+    .chat-widget:hover {
+      background-color: #0F7A3F;
+    }
+    .chat-widget svg {
+      width: 28px;
+      height: 28px;
+      fill: white;
+    }
+
+    /* Products Section */
+    .products-section {
+      padding: 50px 30px 60px;
+      background: #FFF5D1;
+      text-align: center;
+    }
+    .products-section h2 {
+      font-size: 2.4rem;
+      margin-bottom: 40px;
+      font-weight: 700;
+      color: #6B4A00;
+      text-transform: uppercase;
+    }
+    .product-list {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 35px;
+    }
+    .product-card {
+      background: #FFEAA4;
+      border-radius: 16px;
+      padding: 18px;
+      max-width: 240px;
+      box-shadow: 0 4px 15px rgba(166,124,0,0.3);
+      transition: transform 0.3s;
+      cursor: pointer;
+      color: #6B4A00;
+    }
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 25px rgba(166,124,0,0.5);
+    }
+    .product-card img {
+      max-width: 100%;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+    .product-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    .product-card p {
+      font-size: 1rem;
+      margin: 0;
+      color: #8B6A00;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #A67C00;
+      color: white;
+      padding: 25px;
+      text-align: center;
+      font-size: 0.95rem;
+      margin-top: 40px;
+      letter-spacing: 1px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column;
+        padding: 40px 20px;
+      }
+      .hero-text h1 {
+        font-size: 2.2rem;
+      }
+      .hero-images img {
+        max-width: 90%;
+      }
+      nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .product-list {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo" role="banner" tabindex="0">
+      <img src="https://img.freepik.com/premium-vector/indian-woman-giving-ladoo-sweet-kids-pastel-yellow-background_1302-39306.jpg" alt="Amma's Laddu logo showing Amma and baby holding ladoos" />
+      <div class="logo-text">Amma's Laddu</div>
+    </div>
+    <nav aria-label="Primary Navigation">
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="all-ladoos.html">All Ladoos</a></li>
+        <li><a href="#">Traditional</a></li>
+        <li><a href="#">Premium</a></li>
+        <li><a href="#">Gift Packs</a></li>
+        <li><a href="#">About Us</a></li>
+      </ul>
+    </nav>
+    <div class="icons">
+      <button aria-label="Search">🔍</button>
+      <button aria-label="Account">👤</button>
+      <button aria-label="Wishlist">♥</button>
+      <button aria-label="Cart">🛒 ₹0.00</button>
+      <button class="track">Track</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-text">
+      <h1>One Stop For All Your Cravings</h1>
+      <p>Explore authentic homemade ladoos made with love and tradition.</p>
+      <button class="cta">Shop Now</button>
+    </div>
+    <div class="hero-images">
+      <img src="https://www.theladduhouse.com/cdn/shop/products/GroupLaddusWNatraj-square_1200x.jpg?v=1593346982" alt="Assorted ladoos" />
+    </div>
+  </section>
+
+  <div class="social-sidebar" aria-label="Social Media Links">
+    <a href="#" aria-label="Facebook" style="color:#1877F2;">f</a>
+    <a href="#" aria-label="Twitter" style="color:#1DA1F2;">t</a>
+    <a href="#" aria-label="Instagram" style="color:#E1306C;">📷</a>
+    <a href="#" aria-label="YouTube" style="color:#FF0000;">▶</a>
+  </div>
+
+  <div class="chat-widget" title="Chat with us on WhatsApp" role="button" tabindex="0">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M20.52 3.478A11.88 11.88 0 0012.11 0C5.44 0 .01 5.43.01 12.1c0 2.13.55 4.19 1.59 6.02L0 24l6.06-1.56a11.85 11.85 0 006.05 1.54c6.68 0 12.1-5.43 12.1-12.1 0-3.2-1.25-6.21-3.69-8.46zm-8.5 16.14a9.6 9.6 0 01-4.92-1.43l-.35-.22-3.6.93.96-3.5-.23-.36a9.56 9.56 0 1111.83 4.58zm5.36-6.83c-.29-.14-1.7-.83-1.96-.93-.26-.1-.44-.14-.62.14-.17.29-.66.93-.81 1.12-.15.19-.29.21-.54.07-.25-.15-1.05-.39-2-1.23-.74-.66-1.24-1.48-1.39-1.76-.15-.29-.02-.44.12-.59.12-.12.26-.3.38-.45.12-.15.16-.25.26-.42.1-.17.05-.31-.02-.45-.07-.14-.62-1.5-.85-2.06-.22-.54-.44-.47-.62-.48-.16-.01-.34-.01-.52-.01-.18 0-.47.07-.71.34-.24.27-.92.9-.92 2.19s.94 2.54 1.07 2.72c.13.18 1.86 2.87 4.5 4.03a15.21 15.21 0 002.61 1.12c.35.15.68.13.94.08.29-.05.9-.36 1.03-.7.12-.35.12-.65.09-.7-.03-.05-.25-.09-.54-.23z"/>
+    </svg>
+  </div>
+
+  <section class="products-section">
+    <h2>Featured Ladoos</h2>
+    <div class="product-list">
+      <div class="product-card">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUJL01HpUC80rXNv3M6D-foX3MsC68HET4cQ&s" alt="Groundnut laddu" />
+        <h3>Groundnut Laddu</h3>
+        <p>Crunchy and nutritious laddus made with roasted groundnuts and jaggery.</p>
+      </div>
+      <div class="product-card">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-avqpgfhxCbGpiIO1IlJFD0oRIq927keLxQ&s"/>
+        <h3>  Flax Seeds Laddu</h3>
+        <p>Healthy and energizing laddus packed with flax seeds and natural sweeteners.</p>
+      </div>
+      <div class="product-card">
+        <img src="data:image/jpeg;base64,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" alt="Coconut Laddu" />
+        <h3>Coconut Laddu</h3>
+        <p>Sweet and moist laddus made with freshly grated coconut and condensed milk.</p>
+      </div>
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1506368249639-73a05d6f6488?auto=format&fit=crop&w=400&q=80" alt="Til (Sesame) Laddu" />
+        <h3>Sesame Laddu</h3>
+        <p>Crunchy and healthy sesame seeds ladoos, perfect for festivals and energy boosts.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 Amma's Laddu | All Rights Reserved
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>All Ladoos - Amma's Laddu</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #fff3cd;
+      color: #665000;
+    }
+    h1 { font-weight: bold; }
+    #search-container, #filter-container { margin-bottom: 20px; }
+    input[type="text"], input[type="number"] {
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #d9b600;
+      border-radius: 5px;
+      width: 150px;
+    }
+    button.filter-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      color: white;
+      background-color: #0275d8;
+    }
+    button.filter-btn:hover { background-color: #025aa5; }
+    #add-ladoo-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 20px 0;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #add-ladoo-btn:hover { background-color: #0056b3; }
+    #back-btn {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    #back-btn:hover { background-color: #5a6268; }
+    .ladoos-list { display: flex; flex-wrap: wrap; gap: 20px; }
+    .ladoos-item {
+      border: 1px solid #d9b600;
+      padding: 10px;
+      border-radius: 8px;
+      width: 250px;
+      background-color: #fff8e1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .ladoos-item img {
+      max-width: 100%;
+      border-radius: 8px;
+      transition: transform 0.3s ease, filter 0.3s ease;
+      cursor: pointer;
+    }
+    .ladoos-item img:hover { transform: scale(1.05); filter: brightness(90%); }
+    .ladoos-item h3 { margin-top: 10px; font-weight: 700; text-align: center; }
+    .ladoos-item p { font-size: 0.9rem; color: #4d3e00; text-align: center; }
+    .price { font-weight: bold; margin-top: 5px; }
+    .buttons { margin-top: auto; display: flex; flex-direction: column; gap: 8px; width: 100%; }
+    .buttons button {
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 1rem;
+    }
+    .wishlist-btn { background-color: #f0ad4e; color: white; }
+    .wishlist-btn:hover { background-color: #ec971f; }
+    .cart-btn { background-color: #5cb85c; color: white; }
+    .cart-btn:hover { background-color: #449d44; }
+    .edit-btn { background-color: #5bc0de; color: white; }
+    .edit-btn:hover { background-color: #31b0d5; }
+    .delete-btn { background-color: #d9534f; color: white; }
+    .delete-btn:hover { background-color: #c9302c; }
+    .empty-message { font-size: 1.2rem; color: #8a6d3b; font-weight: bold; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>All Ladoos</h1>
+  <button id="back-btn"><i class="fa-solid fa-arrow-left"></i> Back</button>
+
+  <!-- Search Bar -->
+  <div id="search-container">
+    <input type="text" id="search-bar" placeholder="🔍 Search ladoos by name..." />
+  </div>
+
+  <!-- Price Filter -->
+  <div id="filter-container">
+    <label>Min Price: ₹ <input type="number" id="min-price" placeholder="0"></label>
+    <label>Max Price: ₹ <input type="number" id="max-price" placeholder="1000"></label>
+    <button class="filter-btn" id="filter-price-btn">Filter</button>
+    <button class="filter-btn" id="clear-filter-btn" style="background-color:#5bc0de;">Clear</button>
+  </div>
+
+  <button id="add-ladoo-btn"><i class="fa-solid fa-plus"></i> Add New Ladoo</button>
+
+  <div class="ladoos-list" id="ladoos-list"></div>
+
+  <script>
+    const ladoosListElem = document.getElementById('ladoos-list');
+    const addLadooBtn = document.getElementById('add-ladoo-btn');
+    const searchBar = document.getElementById('search-bar');
+    const minPriceInput = document.getElementById('min-price');
+    const maxPriceInput = document.getElementById('max-price');
+    const filterBtn = document.getElementById('filter-price-btn');
+    const clearBtn = document.getElementById('clear-filter-btn');
+    const backBtn = document.getElementById('back-btn');
+    const STORAGE_KEY = 'ladoosData';
+
+    const defaultLadoos = [
+      { name: "Groundnut Laddu", description: "Crunchy and nutritious laddus made with roasted groundnuts and jaggery.", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUJL01HpUC80rXNv3M6D-foX3MsC68HET4cQ&s", minPrice: 50, maxPrice: 80 },
+      { name: "Flax Seeds Laddu", description: "Healthy and energizing laddus packed with flax seeds and natural sweeteners.", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-avqpgfhxCbGpiIO1IlJFD0oRIq927keLxQ&s", minPrice: 90, maxPrice: 120 }
+    ];
+
+    let ladoosData = [];
+
+    function loadLadoos() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      try {
+        ladoosData = saved ? JSON.parse(saved) : defaultLadoos;
+        if (!Array.isArray(ladoosData)) ladoosData = defaultLadoos;
+      } catch {
+        ladoosData = defaultLadoos;
+      }
+    }
+
+    function saveLadoos() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(ladoosData));
+    }
+
+    function addToWishlist(name) { alert(`${name} added to wishlist!`); }
+    function addToCart(name) { alert(`${name} added to cart!`); }
+
+    function deleteLadoo(name) {
+      if (confirm(`Are you sure you want to delete "${name}"?`)) {
+        ladoosData = ladoosData.filter(l => l.name !== name);
+        saveLadoos();
+        renderLadoos(searchBar.value);
+      }
+    }
+
+    function editLadoo(oldName) {
+      const ladoo = ladoosData.find(l => l.name === oldName);
+      if (!ladoo) return alert("Ladoo not found!");
+
+      const newName = prompt("Edit Ladoo Name:", ladoo.name)?.trim();
+      if (!newName) return alert("Name is required!");
+      if (ladoosData.some(l => l.name.toLowerCase() === newName.toLowerCase() && l.name !== oldName)) return alert("Name already exists!");
+
+      const newImg = prompt("Edit Image URL:", ladoo.img)?.trim();
+      if (!newImg) return alert("Image URL is required!");
+
+      const newDesc = prompt("Edit Description:", ladoo.description)?.trim();
+      if (!newDesc) return alert("Description is required!");
+
+      const minPrice = prompt("Edit Minimum Price (₹):", ladoo.minPrice)?.trim();
+      const maxPrice = prompt("Edit Maximum Price (₹):", ladoo.maxPrice)?.trim();
+      if (!minPrice || !maxPrice || isNaN(minPrice) || isNaN(maxPrice) || Number(minPrice) < 0 || Number(maxPrice) < 0 || Number(minPrice) > Number(maxPrice)) {
+        return alert("Please enter a valid price range!");
+      }
+
+      ladoo.name = newName;
+      ladoo.img = newImg;
+      ladoo.description = newDesc;
+      ladoo.minPrice = Number(minPrice);
+      ladoo.maxPrice = Number(maxPrice);
+
+      saveLadoos();
+      renderLadoos(searchBar.value);
+      alert("Ladoo updated successfully!");
+    }
+
+    function createLadooCard(ladoo) {
+      const itemDiv = document.createElement('div');
+      itemDiv.classList.add('ladoos-item');
+
+      const link = document.createElement('a');
+      link.href = `ladoo-details.html?name=${encodeURIComponent(ladoo.name)}`;
+      link.title = `View ${ladoo.name} Details`;
+
+      const img = document.createElement('img');
+      img.src = ladoo.img || 'https://via.placeholder.com/250';
+      img.alt = ladoo.name;
+      link.appendChild(img);
+      itemDiv.appendChild(link);
+
+      const h3 = document.createElement('h3'); h3.textContent = ladoo.name; itemDiv.appendChild(h3);
+      const p = document.createElement('p'); p.textContent = ladoo.description; itemDiv.appendChild(p);
+      const priceP = document.createElement('p'); priceP.classList.add('price'); priceP.textContent = `Price: ₹${ladoo.minPrice} - ₹${ladoo.maxPrice}`; itemDiv.appendChild(priceP);
+
+      const buttonsDiv = document.createElement('div'); buttonsDiv.classList.add('buttons');
+      const wishlistBtn = document.createElement('button'); wishlistBtn.classList.add('wishlist-btn'); wishlistBtn.innerHTML = `<i class="fa-solid fa-heart"></i> Wishlist`; wishlistBtn.onclick = () => addToWishlist(ladoo.name);
+      const cartBtn = document.createElement('button'); cartBtn.classList.add('cart-btn'); cartBtn.innerHTML = `<i class="fa-solid fa-cart-shopping"></i> Cart`; cartBtn.onclick = () => addToCart(ladoo.name);
+      const editBtn = document.createElement('button'); editBtn.classList.add('edit-btn'); editBtn.innerHTML = `<i class="fa-solid fa-pen"></i> Edit`; editBtn.onclick = () => editLadoo(ladoo.name);
+      const deleteBtn = document.createElement('button'); deleteBtn.classList.add('delete-btn'); deleteBtn.innerHTML = `<i class="fa-solid fa-trash"></i> Delete`; deleteBtn.onclick = () => deleteLadoo(ladoo.name);
+
+      buttonsDiv.append(wishlistBtn, cartBtn, editBtn, deleteBtn);
+      itemDiv.appendChild(buttonsDiv);
+      return itemDiv;
+    }
+
+    function renderLadoos(filter = "", minFilter = null, maxFilter = null) {
+      ladoosListElem.innerHTML = '';
+      const filtered = ladoosData.filter(l => 
+        l.name.toLowerCase().includes(filter.toLowerCase()) &&
+        (!minFilter || l.maxPrice >= minFilter) &&
+        (!maxFilter || l.minPrice <= maxFilter)
+      );
+
+      if (filtered.length === 0) {
+        ladoosListElem.innerHTML = '<p class="empty-message">No ladoos found.</p>';
+        return;
+      }
+
+      filtered.forEach(l => ladoosListElem.appendChild(createLadooCard(l)));
+    }
+
+    addLadooBtn.addEventListener('click', () => {
+      const name = prompt("Enter Ladoo Name:")?.trim();
+      if (!name) return alert("Name is required!");
+      if (ladoosData.some(l => l.name.toLowerCase() === name.toLowerCase())) return alert("Name already exists!");
+
+      const img = prompt("Enter Image URL:")?.trim();
+      if (!img) return alert("Image URL is required!");
+
+      const description = prompt("Enter Description:")?.trim();
+      if (!description) return alert("Description is required!");
+
+      const minPrice = prompt("Enter Minimum Price (₹):")?.trim();
+      const maxPrice = prompt("Enter Maximum Price (₹):")?.trim();
+      if (!minPrice || !maxPrice || isNaN(minPrice) || isNaN(maxPrice) || Number(minPrice) < 0 || Number(maxPrice) < 0 || Number(minPrice) > Number(maxPrice)) {
+        return alert("Please enter a valid price range!");
+      }
+
+      ladoosData.push({ name, img, description, minPrice: Number(minPrice), maxPrice: Number(maxPrice) });
+      saveLadoos();
+      renderLadoos(searchBar.value);
+      alert(`${name} added successfully!`);
+    });
+
+    searchBar.addEventListener('input', (e) => renderLadoos(e.target.value, Number(minPriceInput.value) || null, Number(maxPriceInput.value) || null));
+    filterBtn.addEventListener('click', () => renderLadoos(searchBar.value, Number(minPriceInput.value) || null, Number(maxPriceInput.value) || null));
+    clearBtn.addEventListener('click', () => { minPriceInput.value = ''; maxPriceInput.value = ''; renderLadoos(searchBar.value); });
+    backBtn.addEventListener('click', () => { window.location.href = 'index.html'; });
+
+    loadLadoos();
+    renderLadoos();
+  </script>
+</body>
+</html>
